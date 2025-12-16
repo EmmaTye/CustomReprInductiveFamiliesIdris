@@ -48,29 +48,32 @@ data OpTerm : (T : Tel) -> Type where
   IotaTerm : {T : Tel} -> Spine T -> OpTerm T
 
 public export
-data Op : (T : Tel) -> Type where
-  Iota' : {0T : Tel} -> OpTerm T -> Op T
-  IntArr : {0T : Tel} -> OpTerm T -> Op T -> Op T
-  ExtArr' : {0T : Tel} -> (A : Type) -> ((a : A) -> Op T) -> Op T
+data Op : (I : Tel) -> (O : Tel) -> Type where
+  Iota' : {0I : Tel} -> {0O : Tel} -> OpTerm O -> Op I O
+  IntArr : {0I : Tel} -> {0O : Tel} -> OpTerm I -> Op I O -> 
+           Op I O
+  ExtArr' : {0I : Tel} -> {0O : Tel} -> (A : Type) -> 
+            ((a : A) -> Op I O) -> Op I O
 
 public export
-Iota : {T : Tel} -> Spine T -> Op T
+Iota : {0I : Tel} -> {O : Tel} -> Spine O -> Op I O
 Iota delta = Iota' (IotaTerm delta)
 
 public export
-(.->) : {T : Tel} -> Spine T -> Op T -> Op T
+(.->) : {I : Tel} -> {0O : Tel} -> Spine I -> Op I O -> Op I O
 (.->) delta op = IntArr (IotaTerm delta) op
 
 export infixr 9 .->
 
 public export
-ExtArr : {T : Tel} -> {A : Type} -> ((a : A) -> Op T) -> Op T
+ExtArr : {0I : Tel} -> {0O : Tel} -> {A : Type} -> ((a : A) -> Op I O) -> Op  I O
 ExtArr {A = a} lam = ExtArr' a lam
 
 public export
-data Sig : (T : Tel) -> Type where
-  SigEmpty : {T : Tel} -> Sig T
-  (<||) : {T : Tel} -> Op T -> Sig T -> Sig T
+data Sig : (I : Tel) -> (O : Tel) -> Type where
+  SigEmpty : {0I : Tel} -> {0O : Tel} -> Sig I O
+  (<||) : {0I : Tel} -> {0O : Tel} -> Op I O -> Sig I O -> 
+          Sig I O
 
 export infixr 10 <||
 

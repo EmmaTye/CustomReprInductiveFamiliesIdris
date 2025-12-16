@@ -5,23 +5,22 @@ import Signatures
 %default total
 
 public export
-inputs : {0T : Tel} -> (o : Op T) -> (X : Spine T -> Type) -> Tel
-inputs (Iota' (IotaTerm delta)) x = Dot
-inputs (IntArr (IotaTerm delta) o) x = x delta .*. (\y => inputs o x)
-inputs (ExtArr' a lam) x = a .*. (\a' => inputs (lam a') x)
+AlgOp : {0I : Tel} -> {0O : Tel} -> (o : Op I O) -> 
+        (X : Spine I -> Type) ->
+        (Y : Spine O -> Type) ->
+        Type
+AlgOp (Iota' (IotaTerm delta)) x y = y delta
+AlgOp (ExtArr' a lam) x y = (a' : a) -> AlgOp (lam a') x y
+AlgOp (IntArr (IotaTerm delta) o') x y = x delta -> 
+                                         AlgOp o' x y
 
 public export
-outputs : {0T : Tel} -> {o : Op T} -> 
-          {X : Spine T -> Type} -> (v : Spine (inputs o X))
-          -> Spine T
-outputs {o = ExtArr' a lam} (a' .+. v') = outputs v'
-outputs {o = IntArr (IotaTerm delta) o'} (x .+. v') = outputs v'
-outputs {o = Iota' (IotaTerm delta)} SEmpty = delta
-
-public export
-Alg : {0T : Tel} -> (sig : Sig T) -> (X : Spine T -> Type) -> Tel
-Alg SigEmpty x = Dot
-Alg (op <|| sig) x = 
-  ((v : Spine (inputs op x)) -> x (outputs v)) 
-  .*. (\v => (Alg sig x))
+Alg : {0I : Tel} -> {0O : Tel} -> (sig : Sig I O) -> 
+      (X : Spine I -> Type) -> 
+      (Y : Spine O -> Type) ->
+      Tel
+Alg SigEmpty x y = Dot
+Alg (o <|| sig) x y =
+  AlgOp o x y
+  .*. (\v => (Alg sig x y))
 
