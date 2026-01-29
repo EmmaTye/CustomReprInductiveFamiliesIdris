@@ -1,0 +1,6 @@
+name: inductive-families-repr-lazy
+depend:
+  -- NOTE: keep up-to-date with flake.nix agda packages
+  standard-library
+include: .
+
