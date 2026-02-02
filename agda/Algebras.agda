@@ -19,5 +19,5 @@ Alg : ∀  {n : Level} {@0 I : Tel} {@0 O : Tel} →
       (Y : Spine O → Set n) →
       Tel {n}
 Alg ϵ X Y = ·
-Alg (op ◃ Σ) X Y = AlgOp op X Y * (λ v → Alg Σ X Y)
+Alg (op ◃ Σ) X Y = AlgOp op X Y * (λ _ → Alg Σ X Y)
 
